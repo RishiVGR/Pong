@@ -1,0 +1,6 @@
+How to draw things:
+
+void DrawRectangle(int posx, int posy, int width, int height, Color color);
+void DrawCircle(int centerx, int centery, float radius, Color color);
+void DrawLine(int startposx, int startposy, int endposx, int endposy, Color color);
+void DrawPoly(Vector2 center, int sides, float radius, float rotation, Color color);
