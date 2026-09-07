@@ -30,13 +30,11 @@ class Ball{
 };
 
 class Paddle{
-    private:
-        const int x = 10;
-
     public:
         float width, height;
         float speed_y;
         int y;
+        int x = 10;
         Color color;
 
     public:
@@ -64,8 +62,17 @@ class Paddle{
 
 };
 
-class CpuPaddle: public Paddle{
-    
+class cpuPaddle: public Paddle{
+    public:
+        void updateCPU(int ball_y){
+            if(y+height/2 > ball_y){
+                y = y -speed_y;
+            }
+            if(y+height/2 <= ball_y){
+                y=y+speed_y;
+            }
+            
+        }
 };
 
 int main () {
@@ -95,19 +102,30 @@ int main () {
     player.speed_y = 5;
     player.color = GREEN;
 
+    // cpu instance
+    cpuPaddle ai;
+    ai.y = (scrHeight/2) - 60;
+    ai.height = 120;
+    ai.speed_y = 7;
+    ai.color = GREEN;
+    ai.width = 25;
+    ai.x = (scrWidth-10) - ai.width;
+
+
     while(WindowShouldClose() == false){ // checks if esc key pressed - or window exited
         BeginDrawing(); // create blank canvas
 
         //update
         player.updatePaddle();
         gameBall.update(); // updates balls location
+        ai.updateCPU(gameBall.y);
 
         //assets
         ClearBackground(WHITE); // clears background before drawing assets - gets rid of trace
         DrawLine(scrWidth/2, 0, scrWidth/2, scrHeight, DARKBLUE);
         player.drawPaddle();
         gameBall.drawBall();
-        DrawRectangle(scrWidth-35, (scrHeight/2) - 60, 25, 120, GREEN);
+        ai.drawPaddle();
 
 
         EndDrawing(); // ends canvas drawing
