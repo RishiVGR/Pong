@@ -2,15 +2,30 @@
 #include <raylib.h>
 
 class Ball{
+    private: 
+        int cpuScore = 0;
+        int playerScore = 0;
+        int speed_choicesY[2] = {-7, 7};
+        int speed_choicesX[2] = {-7, 7};
     public:
         float x,y;                  // basic asset features
         int speed_x, speed_y;
         int radius;
+        int* cpuBridge = &cpuScore;
+        int* playerBridge = &playerScore;
         Color color = WHITE;
 
     public:
         void drawBall(){ // draw the ball
             DrawCircle(x, y, radius, color);
+        }
+
+        void resetBall(){ // maybe make it so that it puts the paddles in center as well.
+            x = GetScreenWidth()/2;
+            y = GetScreenHeight()/2;
+            speed_x = speed_choicesX[GetRandomValue(0,1)];
+            speed_y = speed_choicesY[GetRandomValue(0,1)];
+
         }
 
         void update(){ // update balls location (dependent on fps) - this case 420px per s
@@ -21,9 +36,14 @@ class Ball{
                 // then reverse direction
                 speed_y *= -1;
             }
-            if(x+radius >= GetScreenWidth() || x-radius <= 0){ // check if ball is on or beyond the screen boyndaries
+            if(x+radius >= GetScreenWidth()){ // check if ball is on or beyond the screen boyndaries
                 // then reverse direction
-                speed_x*=-1;
+                *playerBridge+=1;
+                resetBall();
+            }
+            if(x-radius <= 0){
+                *cpuBridge+=1;
+                resetBall();
             }
         }
 
@@ -34,8 +54,9 @@ class Paddle{
         float width, height;
         float speed_y;
         float y;
-        float x = 10;
+        float x {10};
         Color color;
+        int score {0};
 
     public:
         void drawPaddle(){
@@ -70,8 +91,7 @@ class cpuPaddle: public Paddle{
             }
             if(y+height/2 <= ball_y){ // check if center of ball y is greater than half of paddle 
                 y=y+speed_y;
-            }
-            
+            }            
         }
 };
 
@@ -134,11 +154,12 @@ int main () {
         player.drawPaddle();
         gameBall.drawBall();
         ai.drawPaddle();
-
+        DrawText(TextFormat("%i", *gameBall.playerBridge), scrWidth/4 - 20, 20, 80, YELLOW);
+        DrawText(TextFormat("%i", *gameBall.cpuBridge), 3 * scrWidth / 4 - 20, 20, 80, YELLOW);
 
         EndDrawing(); // ends canvas drawing
     }
-
     CloseWindow();
+
     return 0;
 }
