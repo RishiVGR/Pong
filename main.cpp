@@ -33,8 +33,8 @@ class Paddle{
     public:
         float width, height;
         float speed_y;
-        int y;
-        int x = 10;
+        float y;
+        float x = 10;
         Color color;
 
     public:
@@ -65,15 +65,17 @@ class Paddle{
 class cpuPaddle: public Paddle{
     public:
         void updateCPU(int ball_y){
-            if(y+height/2 > ball_y){
+            if(y+height/2 > ball_y){ // check if center of ball y is less than half of paddle
                 y = y -speed_y;
             }
-            if(y+height/2 <= ball_y){
+            if(y+height/2 <= ball_y){ // check if center of ball y is greater than half of paddle 
                 y=y+speed_y;
             }
             
         }
 };
+
+
 
 int main () {
     const int scrWidth {1280}; // defined constant screen dimensions - top left = 0,0 - bottom right = 1280,800
@@ -106,7 +108,7 @@ int main () {
     cpuPaddle ai;
     ai.y = (scrHeight/2) - 60;
     ai.height = 120;
-    ai.speed_y = 7;
+    ai.speed_y = 6;
     ai.color = GREEN;
     ai.width = 25;
     ai.x = (scrWidth-10) - ai.width;
@@ -119,6 +121,12 @@ int main () {
         player.updatePaddle();
         gameBall.update(); // updates balls location
         ai.updateCPU(gameBall.y);
+        if(CheckCollisionCircleRec(Vector2{gameBall.x, gameBall.y}, gameBall.radius, Rectangle{player.x, player.y, player.width, player.height})){ // check if ball collides with player paddle
+            gameBall.speed_x *= -1;
+        }
+        if(CheckCollisionCircleRec(Vector2{gameBall.x, gameBall.y}, gameBall.radius, Rectangle{ai.x, ai.y, ai.width, ai.height})){ // check if ball collides with cpu paddle
+            gameBall.speed_x *= -1;
+        }
 
         //assets
         ClearBackground(WHITE); // clears background before drawing assets - gets rid of trace
